@@ -1,7 +1,7 @@
 # coding: utf-8
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "happn/happn"
+require "happn/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "happn"
@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://gitlab.spin42.me/commuty/happn"
   spec.license       = "MIT"
 
-  spec.files         = ["lib/happn.rb", "lib/projector.rb", "lib/event_consumer.rb"]
+  spec.files         = `git ls-files -z`.split("\x0")
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler", "1.12.5"

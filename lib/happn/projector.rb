@@ -4,7 +4,7 @@ module Happn
     @@event_handlers_by_expression = {}
 
     def initialize
-      @logger = Rails.logger
+      @logger = Happn.logger
     end
 
     def handled_event_names
@@ -24,19 +24,21 @@ module Happn
     end
 
     def handle_by_expression(event, data)
-      event_name = event.fetch("name")
+      meta       = event.fetch("meta")
+      event_name = meta.fetch("name")
       @@event_handlers_by_expression.each do | event_expression, handler|
         instance_exec(event, data, &handler) if event_name.match(event_expression)
       end
-      @logger.debug("Handle #{event_name} from #{event.fetch("origin")}: #{data}")
+      @logger.debug("Handle #{event_name} from #{meta.fetch("emitter")}: #{data}")
     end
 
     def handle_by_name(event, data)
-      event_name = event.fetch("name")
-      handler = @@event_handlers_by_name[event_name]
+      meta       = event.fetch("meta")
+      event_name = meta.fetch("name")
+      handler    = @@event_handlers_by_name[event_name]
       unless handler.nil?
-        instance_exec(event, data, &handler) if matches
-        @logger.debug("Handle #{event_name} from #{event.fetch("origin")}: #{data}")
+        instance_exec(event, data, &handler)
+        @logger.debug("Handle #{event_name} from #{meta.fetch("emitter")}: #{data}")
       end
     end
   end

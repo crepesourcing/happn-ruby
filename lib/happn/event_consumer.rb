@@ -1,17 +1,20 @@
+require "bunny"
+
 module Happn
   class EventConsumer
-    def initialize
-      @connection    = ::Bunny.new({
-        host: ENV.fetch("RABBITMQ_HOST"),
-        user: ENV.fetch("RABBITMQ_USER"),
-        pass: ENV.fetch("RABBITMQ_PASSWORD"),
-        port: ENV.fetch("RABBITMQ_PORT").to_i
-        })
-      @queue_name                = ENV.fetch("CONSUMER_QUEUE_NAME")
+    def initialize(logger, configuration)
+      @configuration = configuration
+      @logger        = logger
+
+      @connection    = Bunny.new( host: @configuration.rabbitmq_host,
+                                  port: @configuration.rabbitmq_port,
+                                  user: @configuration.rabbitmq_user,
+                                  password: @configuration.rabbitmq_password,
+                                  automatically_recover: true)
+      @queue_name                = @configuration.rabbitmq_queue_name
       @max_retries               = 5
       @attempts                  = 0
-      @logger                    = Rails.logger
-      projector_names            = ENV.fetch("PROJECTOR_NAMES")
+      projector_names            = @configuration.projector_names
       @subscriptions             = projectors_subscriptions(projector_names)
       @subscriptions_with_regexp = projectors_subscriptions_with_regexp(projector_names)
       @logger.debug("Projectors subscribed by name, #{@subscriptions}")
@@ -38,20 +41,18 @@ module Happn
       @connection.start
       @channel = @connection.create_channel
       @queue   = @channel.queue(@queue_name, durable: true)
-      options  = {
-        manual_ack: true,
-        block: true
-      }
-      exchange = @channel.send(ENV.fetch("RABBITMQ_EXCHANGE_TYPE"),
-        ENV.fetch("RABBITMQ_EXCHANGE_NAME"),
-        durable: ENV.fetch("RABBITMQ_EXCHANGE_DURABLE") == "true"
-      )
+      exchange = @channel.send(@configuration.rabbitmq_exchange_type,
+                               @configuration.rabbitmq_exchange_name,
+                               durable: @configuration.rabbitmq_exchange_durable)
       @queue.bind(exchange)
       @logger.info("Ready!")
     end
 
-
     def consume
+      options  = {
+        manual_ack: true,
+        block: true
+      }
       @queue.subscribe(options) do |delivery_info, _properties, event|
         begin
           handle_message(event, delivery_info)
