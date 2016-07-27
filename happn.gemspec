@@ -1,10 +1,11 @@
 # coding: utf-8
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require "happn/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "happn"
-  spec.version       = "0.1.0"
+  spec.version       = Happn::VERSION
   spec.authors       = ["Commuty"]
   spec.email         = ["support@commuty.net"]
   spec.summary       = "Gem to connect a RabbitMQ exchange and listen for events."
@@ -18,5 +19,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler", "1.12.5"
-  spec.add_dependency             "bunny",   "2.5.0"
+  spec.add_dependency             "bunny",   ">=2.5.0"
+  spec.add_dependency             "activesupport"
 end
