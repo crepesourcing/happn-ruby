@@ -1,6 +1,8 @@
 require_relative "happn/version"
 require_relative "happn/configuration"
 require_relative "happn/event_consumer"
+require_relative "happn/subscription"
+require_relative "happn/subscription_repository"
 require_relative "happn/projector"
 require "logger"
 
@@ -18,8 +20,10 @@ module Happn
   end
 
   def self.init
-    @logger         = @configuration.logger || Logger.new(STDOUT)
-    @event_consumer = Happn::EventConsumer.new(@logger, @configuration)
+    @logger                 = @configuration.logger || Logger.new(STDOUT)
+    subscription_repository = SubscriptionRepository.new(@logger)
+    projectors              = Happn::register(@configuration.projector_names, subscription_repository)
+    @event_consumer         = EventConsumer.new(@logger, @configuration, subscription_repository)
   end
 
   def self.start
@@ -35,5 +39,16 @@ module Happn
     config.rabbitmq_exchange_name     = "events"
     config.rabbitmq_exchange_type     = "fanout"
     config.rabbitmq_exchange_durable  = true
+    config.max_retries                = 5
   end
+
+  private
+
+  def self.register(projector_names, subscription_repository)
+    projector_names.split(",").map do | projector_name |
+      projector = projector_name.strip.camelize.constantize.new(@logger, subscription_repository)
+      projector.define_handlers
+    end
+  end
+
 end
