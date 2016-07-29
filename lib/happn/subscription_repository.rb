@@ -36,32 +36,14 @@
           end
         end
       end
+
+      if meta[:replayed]
+        subscriptions = subscriptions.select { | subscription | subscription.query.run_on_replayed_events }
+      end
       subscriptions
     end
 
     private
-
-    def find_subscription_by_expression(event_name)
-      @subscriptions_by_expression.select { | expression, subscription | event_name.match(expression) }.values
-    end
-
-    def register_by_name(name, projector, &block)
-      @subscriptions_by_name[name] ||= []
-      @subscriptions_by_name[name].push(Subscription.new(projector, &block))
-      @logger.info("Register Event Handler from projector '#{projector.class}' for name : '#{name}'.")
-    end
-
-    def register_by_kind(kind, projector, &block)
-      @subscriptions_by_kind[kind] ||= []
-      @subscriptions_by_kind[kind].push(Subscription.new(projector, &block))
-      @logger.info("Register Event Handler from projector '#{projector.class}' for kind : '#{kind}'.")
-    end
-
-
-    def register_for_all(projector, &block)
-      @subscriptions_for_all.push(Subscription.new(projector, &block))
-      @logger.info("Register Event Handler from projector '#{projector.class}' for all events.")
-    end
 
     def flatten(item)
       if item.instance_of?(Hash)
