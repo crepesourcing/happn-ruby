@@ -36,10 +36,18 @@ module Happn
       @connection.start
       @channel = @connection.create_channel
       @queue   = @channel.queue(@queue_name, durable: true)
-      exchange = @channel.send(@configuration.rabbitmq_exchange_type,
+      exchange = @channel.send(:topic,
                                @configuration.rabbitmq_exchange_name,
                                durable: @configuration.rabbitmq_exchange_durable)
-      @queue.bind(exchange)
+
+      routing_keys = @subscription_repository.find_all.map do | subscription |
+        subscription.query.to_routing_key
+      end
+      routing_keys.uniq.each do | routing_key |
+        @logger.info("Bind exchange to queue with routing key : #{routing_key}")
+        @queue.bind(exchange, routing_key: routing_key)
+      end
+
       @logger.info("Ready!")
     end
 

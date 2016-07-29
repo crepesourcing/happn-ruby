@@ -2,36 +2,40 @@
   class SubscriptionRepository
 
     def initialize(logger)
-      @subscriptions_by_name       = {}
-      @subscriptions_by_kind       = {}
-      @subscriptions_by_expression = {}
-      @subscriptions_for_all       = []
-      @logger                      = logger
+      @subscriptions = {}
+      @logger        = logger
     end
 
     def register(query, projector, &block)
-      puts "coucou"
-      puts query.class
-      if query.instance_of? Regexp
-        register_expression(query, projector, &block)
-      elsif query.instance_of? String
-        register_by_name(query, projector, &block)
-      elsif query == :all
-        register_for_all(projector, &block)
-      elsif query.instance_of?(Hash) && query.key?(:kind)
-        register_by_kind(query[:kind], projector, &block)
-      else
-        throw new StandardError.new("#{query.class} is not handled as a valid query")
-      end
+      subscription = Subscription.new(query, projector, &block)
+      emitter      = query.emitter
+      kind         = query.kind
+      name         = query.name
+      @subscriptions[emitter]              ||= {}
+      @subscriptions[emitter][kind]        ||= {}
+      @subscriptions[emitter][kind][name]  ||= []
+      @subscriptions[emitter][kind][name].push(subscription)
+      @logger.info("Subscribe projector '#{projector.class}' to query : [#{emitter}][#{kind}][#{name}]")
+    end
+
+    def find_all
+      flatten(@subscriptions)
     end
 
     def find_subscriptions_for(event)
-      event_name    = event.fetch("meta").fetch("name")
-      subscriptions = []
-      subscriptions += @subscriptions_by_name[event_name] || []
-      subscriptions += @subscriptions_by_kind[event.fetch("meta").fetch("kind")] || []
-      subscriptions += find_subscription_by_expression(event_name)
-      subscriptions += @subscriptions_for_all
+      meta                    = event.fetch("meta")
+      possible_event_names    = [:all, meta.fetch("name")]
+      possible_event_kinds    = [:all, meta.fetch("kind")]
+      possible_event_emitters = [:all, meta.fetch("emitter")]
+      subscriptions           = []
+
+      possible_event_emitters.each do | emitter |
+        possible_event_kinds.each do | kind |
+          possible_event_names.each do | name |
+            subscriptions += @subscriptions.dig(emitter, kind, name) || []
+          end
+        end
+      end
       subscriptions
     end
 
@@ -39,12 +43,6 @@
 
     def find_subscription_by_expression(event_name)
       @subscriptions_by_expression.select { | expression, subscription | event_name.match(expression) }.values
-    end
-
-    def register_by_expression(expression, projector, &block)
-      @subscriptions_by_expression[expression] ||= []
-      @subscriptions_by_expression[expression].push(Subscription.new(projector, &block))
-      @logger.info("Register Event Handler from projector '#{projector.class}' for expression : '#{expression}'.")
     end
 
     def register_by_name(name, projector, &block)
@@ -63,6 +61,16 @@
     def register_for_all(projector, &block)
       @subscriptions_for_all.push(Subscription.new(projector, &block))
       @logger.info("Register Event Handler from projector '#{projector.class}' for all events.")
+    end
+
+    def flatten(item)
+      if item.instance_of?(Hash)
+        item.values.inject([]) do | result, value |
+          result += flatten(value)
+        end
+      else
+        item
+      end
     end
   end
 end

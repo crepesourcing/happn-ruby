@@ -1,9 +1,10 @@
 module Happn
   class Subscription
 
-    attr_reader :handler, :projector
+    attr_reader :handler, :projector, :query
 
-    def initialize(projector, &handler)
+    def initialize(query, projector, &handler)
+      @query     = query
       @projector = projector
       @handler   = handler
     end
