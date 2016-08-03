@@ -4,7 +4,14 @@ module Happn
     attr_reader :emitter, :kind, :name, :status
 
     def initialize(emitter, kind, name, status)
-      raise "'Dot' is not a valid character" if emitter.to_s.include?(".") || kind.to_s.include?(".") || name.to_s.include?(".") || status.to_s.include?(".")
+      emitter = emitter.to_s
+      kind    = kind.to_s
+      name    = name.to_s
+      status  = status.to_s
+
+      if emitter.include?(".") || kind.include?(".") || name.include?(".") || status.include?(".")
+        raise "'Dot' is not a valid character"
+      end
 
       @emitter = emitter
       @kind    = kind
@@ -19,8 +26,7 @@ module Happn
     private
 
     def to_expression(query_expression)
-      query_expression == :all ? "*" : query_expression
+      query_expression == "all" ? "*" : query_expression
     end
-
   end
 end

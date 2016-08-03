@@ -102,7 +102,6 @@ module Happn
 
     def unbind_useless_routing_keys(queue, exchange, useful_routing_keys)
       all_routing_keys = find_all_routing_keys_of(queue)
-      puts all_routing_keys.inspect
       keys_to_remove   = all_routing_keys - useful_routing_keys
       keys_to_remove.each do | routing_key |
         @queue.unbind(exchange, routing_key: routing_key)

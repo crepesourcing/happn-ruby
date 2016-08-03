@@ -9,7 +9,7 @@ module Happn
     def define_handlers
     end
 
-    def on(emitter: :all, kind: :all, name: :all, status: :all, &block)
+    def on(emitter: "all", kind: "all", name: "all", status: "all", &block)
       query = Query.new(emitter, kind, name, status)
       @subscription_repository.register(query, self, &block)
     end
