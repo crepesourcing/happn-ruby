@@ -35,6 +35,7 @@ module Happn
     config.logger                     = nil
     config.rabbitmq_host              = "localhost"
     config.rabbitmq_port              = "5672"
+    config.rabbitmq_management_port   = "15672"
     config.rabbitmq_user              = ""
     config.rabbitmq_password          = ""
     config.rabbitmq_exchange_name     = "events"

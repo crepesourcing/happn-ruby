@@ -1,4 +1,5 @@
 require "bunny"
+require "rabbitmq/http/client"
 
 module Happn
   class EventConsumer
@@ -14,6 +15,9 @@ module Happn
                                            user: @configuration.rabbitmq_user,
                                            password: @configuration.rabbitmq_password,
                                            automatically_recover: true)
+      @management_client      = RabbitMQ::HTTP::Client.new("http://#{@configuration.rabbitmq_host}:#{@configuration.rabbitmq_management_port}/",
+                                                           username: @configuration.rabbitmq_user,
+                                                           password: @configuration.rabbitmq_password)
     end
 
     def start
@@ -47,6 +51,8 @@ module Happn
         @logger.info("Bind exchange to queue with routing key : #{routing_key}")
         @queue.bind(exchange, routing_key: routing_key)
       end
+
+      unbind_useless_routing_keys(@queue, exchange, routing_keys)
 
       @logger.info("Ready!")
     end
@@ -90,6 +96,23 @@ module Happn
       end
       @logger.fatal("Can't handle event, wait and retry.")
       sleep(2)
+    end
+
+    private
+
+    def unbind_useless_routing_keys(queue, exchange, useful_routing_keys)
+      all_routing_keys = find_all_routing_keys_of(queue)
+      puts all_routing_keys.inspect
+      keys_to_remove   = all_routing_keys - useful_routing_keys
+      keys_to_remove.each do | routing_key |
+        @queue.unbind(exchange, routing_key: routing_key)
+      end
+    end
+
+    def find_all_routing_keys_of(queue)
+      @management_client.list_queue_bindings("/", queue.name).map do | binding |
+        binding.routing_key
+      end
     end
   end
 end
