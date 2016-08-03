@@ -1,19 +1,19 @@
 module Happn
   class Query
 
-    attr_reader :emitter, :kind, :name, :run_on_replayed_events
+    attr_reader :emitter, :kind, :name, :status
 
-    def initialize(emitter, kind, name, run_on_replayed_events)
-      raise "'Dot' is not a valid character" if emitter.to_s.include?(".") || kind.to_s.include?(".") || name.to_s.include?(".")
+    def initialize(emitter, kind, name, status)
+      raise "'Dot' is not a valid character" if emitter.to_s.include?(".") || kind.to_s.include?(".") || name.to_s.include?(".") || status.to_s.include?(".")
 
-      @emitter                = emitter
-      @kind                   = kind
-      @name                   = name
-      @run_on_replayed_events = run_on_replayed_events
+      @emitter = emitter
+      @kind    = kind
+      @name    = name
+      @status  = status
     end
 
     def to_routing_key
-      "#{to_expression(@emitter)}.#{to_expression(@kind)}.#{to_expression(@name)}"
+      "#{to_expression(@status)}.#{to_expression(@emitter)}.#{to_expression(@kind)}.#{to_expression(@name)}"
     end
 
     private

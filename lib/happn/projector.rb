@@ -9,8 +9,8 @@ module Happn
     def define_handlers
     end
 
-    def on(emitter: :all, kind: :all, name: :all, replay: true, &block)
-      query = Query.new(emitter, kind, name, replay)
+    def on(emitter: :all, kind: :all, name: :all, status: :all, &block)
+      query = Query.new(emitter, kind, name, status)
       @subscription_repository.register(query, self, &block)
     end
   end

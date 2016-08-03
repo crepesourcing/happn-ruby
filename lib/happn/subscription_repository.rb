@@ -11,11 +11,13 @@
       emitter      = query.emitter
       kind         = query.kind
       name         = query.name
-      @subscriptions[emitter]              ||= {}
-      @subscriptions[emitter][kind]        ||= {}
-      @subscriptions[emitter][kind][name]  ||= []
-      @subscriptions[emitter][kind][name].push(subscription)
-      @logger.info("Subscribe projector '#{projector.class}' to query : [#{emitter}][#{kind}][#{name}]")
+      status       = query.status
+      @subscriptions[status]                       ||= {}
+      @subscriptions[status][emitter]              ||= {}
+      @subscriptions[status][emitter][kind]        ||= {}
+      @subscriptions[status][emitter][kind][name]  ||= []
+      @subscriptions[status][emitter][kind][name].push(subscription)
+      @logger.info("Subscribe projector '#{projector.class}' to query : [#{status}][#{emitter}][#{kind}][#{name}]")
     end
 
     def find_all
@@ -27,18 +29,17 @@
       possible_event_names    = [:all, meta.fetch("name")]
       possible_event_kinds    = [:all, meta.fetch("kind")]
       possible_event_emitters = [:all, meta.fetch("emitter")]
+      possible_event_statuses = [:all, meta.fetch("status")]
       subscriptions           = []
 
-      possible_event_emitters.each do | emitter |
-        possible_event_kinds.each do | kind |
-          possible_event_names.each do | name |
-            subscriptions += @subscriptions.dig(emitter, kind, name) || []
+      possible_event_statuses.each do | status |
+        possible_event_emitters.each do | emitter |
+          possible_event_kinds.each do | kind |
+            possible_event_names.each do | name |
+              subscriptions += @subscriptions.dig(status, emitter, kind, name) || []
+            end
           end
         end
-      end
-
-      if meta[:replayed]
-        subscriptions = subscriptions.select { | subscription | subscription.query.run_on_replayed_events }
       end
       subscriptions
     end
