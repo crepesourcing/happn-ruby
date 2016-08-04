@@ -18,6 +18,10 @@ module Happn
       @data[:changes]
     end
 
+    def changes=(new_changes)
+      @data[:changes] = new_changes
+    end
+
     def associations
       @data[:associations]
     end
