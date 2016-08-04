@@ -1,4 +1,4 @@
-  module Happn
+module Happn
   class SubscriptionRepository
 
     def initialize(logger)
@@ -25,11 +25,10 @@
     end
 
     def find_subscriptions_for(event)
-      meta                    = event.fetch("meta")
-      possible_event_statuses = ["all", meta.fetch("status")]
-      possible_event_names    = ["all", meta.fetch("name")]
-      possible_event_kinds    = ["all", meta.fetch("kind")]
-      possible_event_emitters = ["all", meta.fetch("emitter")]
+      possible_event_statuses = [:all, event.status.to_sym]
+      possible_event_names    = [:all, event.name]
+      possible_event_kinds    = [:all, event.kind]
+      possible_event_emitters = [:all, event.emitter]
       subscriptions           = []
       possible_event_statuses.each do | status |
         possible_event_emitters.each do | emitter |

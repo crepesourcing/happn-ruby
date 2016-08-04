@@ -72,16 +72,14 @@ module Happn
     end
 
     def handle_message(message, delivery_info)
-      event         = JSON.parse(message)
+      event         = Event.new(JSON.parse(message))
       subscriptions = @subscription_repository.find_subscriptions_for(event)
-      meta          = event.fetch("meta")
 
-      @logger.debug("Executing #{subscriptions.size} handlers for event '#{meta["name"]}' with id: #{meta["id"]}.")
+      @logger.info("Executing #{subscriptions.size} handlers for event '#{event.name}' with id: #{event.id}.")
       subscriptions.each do | subscription |
-        data      = event["data"]
         projector = subscription.projector
         handler   = subscription.handler
-        projector.instance_exec(event, data, &handler)
+        projector.instance_exec(event, &handler)
       end
       @channel.acknowledge(delivery_info.delivery_tag, false)
     end

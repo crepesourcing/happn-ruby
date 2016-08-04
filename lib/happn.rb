@@ -1,3 +1,4 @@
+require_relative "happn/event"
 require_relative "happn/query"
 require_relative "happn/version"
 require_relative "happn/configuration"
