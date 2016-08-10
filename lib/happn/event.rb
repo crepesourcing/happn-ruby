@@ -22,6 +22,10 @@ module Happn
       @data[:changes] = new_changes
     end
 
+    def add_change(name, value)
+      changes[name.to_sym] = [nil, value]
+    end
+
     def associations
       @data[:associations]
     end
@@ -56,6 +60,14 @@ module Happn
 
     def change_before(attribute_name)
       changes[attribute_name.to_sym].try(:first)
+    end
+
+    def has_change?(attribute_name)
+      !changes[attribute_name].nil?
+    end
+
+    def delete_change(attribute_name)
+      changes.delete(attribute_name)
     end
 
     private
