@@ -23,7 +23,8 @@ module Happn
     end
 
     def add_change(name, value)
-      changes[name.to_sym] = [nil, value]
+      new_value            = value == "" ? nil : value
+      changes[name.to_sym] = [nil, new_value]
     end
 
     def associations
