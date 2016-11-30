@@ -11,6 +11,7 @@ module Happn
     config_accessor :rabbitmq_queue_name
     config_accessor :rabbitmq_exchange_name
     config_accessor :rabbitmq_exchange_durable
+    config_accessor :rabbitmq_queue_mode
     config_accessor :projector_classes
   end
 end

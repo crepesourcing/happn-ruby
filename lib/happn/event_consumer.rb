@@ -60,7 +60,10 @@ module Happn
     def consume
       options  = {
         manual_ack: true,
-        block: true
+        block: true,
+        arguments: {
+          "x-queue-mode" => @configuration.rabbitmq_queue_mode
+        }
       }
       @queue.subscribe(options) do | delivery_info, _properties, event |
         begin
