@@ -42,6 +42,7 @@ module Happn
     config.rabbitmq_exchange_name     = "events"
     config.rabbitmq_exchange_durable  = true
     config.rabbitmq_queue_mode        = "default"
+    config.rabbitmq_prefetch_size     = 10
     config.max_retries                = 5
     config.projector_classes          = []
   end

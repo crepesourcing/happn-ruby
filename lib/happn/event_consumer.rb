@@ -39,7 +39,10 @@ module Happn
     def connect
       @connection.start
       @channel = @connection.create_channel
-      @queue   = @channel.queue(@queue_name, durable: true)
+      @channel.basic_qos(@configuration.rabbitmq_prefetch_size)
+      @queue   = @channel.queue(@queue_name, durable: true, arguments: {
+        "x-queue-mode" => @configuration.rabbitmq_queue_mode
+      })
       exchange = @channel.send(:topic,
                                @configuration.rabbitmq_exchange_name,
                                durable: @configuration.rabbitmq_exchange_durable)
@@ -60,10 +63,7 @@ module Happn
     def consume
       options  = {
         manual_ack: true,
-        block: true,
-        arguments: {
-          "x-queue-mode" => @configuration.rabbitmq_queue_mode
-        }
+        block: true
       }
       @queue.subscribe(options) do | delivery_info, _properties, event |
         begin
