@@ -40,9 +40,9 @@ module Happn
       @connection.start
       @channel = @connection.create_channel
       @channel.basic_qos(@configuration.rabbitmq_prefetch_size)
-      @queue   = @channel.queue(@queue_name, durable: true, arguments: {
-        "x-queue-mode" => @configuration.rabbitmq_queue_mode
-      })
+      arguments = {}
+      arguments["x-queue-mode"] = @configuration.rabbitmq_queue_mode unless @configuration.rabbitmq_queue_mode.nil?
+      @queue   = @channel.queue(@queue_name, durable: true, arguments)
       exchange = @channel.send(:topic,
                                @configuration.rabbitmq_exchange_name,
                                durable: @configuration.rabbitmq_exchange_durable)
