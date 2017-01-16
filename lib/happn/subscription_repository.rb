@@ -8,10 +8,10 @@ module Happn
 
     def register(query, projector, &block)
       subscription = Subscription.new(query, projector, &block)
-      emitter      = query.emitter
-      kind         = query.kind
-      name         = query.name
-      status       = query.status
+      emitter      = query.emitter.to_s
+      kind         = query.kind.to_s
+      name         = query.name.to_s
+      status       = query.status.to_s
       @subscriptions[status]                       ||= {}
       @subscriptions[status][emitter]              ||= {}
       @subscriptions[status][emitter][kind]        ||= {}
@@ -25,10 +25,10 @@ module Happn
     end
 
     def find_subscriptions_for(event)
-      possible_event_statuses = [:all, event.status.to_sym]
-      possible_event_names    = [:all, event.name]
-      possible_event_kinds    = [:all, event.kind]
-      possible_event_emitters = [:all, event.emitter]
+      possible_event_statuses = ["all", event.status.to_s]
+      possible_event_emitters = ["all", event.emitter.to_s]
+      possible_event_names    = ["all", event.name.to_s]
+      possible_event_kinds    = ["all", event.kind.to_s]
       subscriptions           = []
       possible_event_statuses.each do | status |
         possible_event_emitters.each do | emitter |
