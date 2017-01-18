@@ -93,6 +93,7 @@ module Happn
       @attempts += 1
       if @attempts > @max_retries
         @logger.fatal("Max retry reached to handle event, exit.")
+        @logger.fatal("Max retry reached to handle event, exit. #{exception.backtrace}")
         exit(1)
       end
       @logger.fatal("Can't handle event, wait and retry.")
