@@ -19,7 +19,7 @@ module Happn
                                                            password: @configuration.rabbitmq_password)
     end
 
-    def start
+    def wait_until_connected
       connected = false
       while !connected
         begin
@@ -30,6 +30,10 @@ module Happn
           sleep 2
         end
       end
+    end
+
+    def start
+      wait_until_connected
       consume
     end
 

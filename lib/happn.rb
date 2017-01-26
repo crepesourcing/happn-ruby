@@ -34,6 +34,7 @@ module Happn
 
   def self.create_queue_only
     Happn.init
+    @event_consumer.wait_until_connected
   end
 
   configure do |config|
