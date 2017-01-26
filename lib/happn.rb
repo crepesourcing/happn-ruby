@@ -34,7 +34,6 @@ module Happn
 
   def self.create_queue_only
     Happn.init
-    exit
   end
 
   configure do |config|
