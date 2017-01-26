@@ -9,7 +9,6 @@ module Happn
       @subscription_repository = subscription_repository
       @queue_name              = @configuration.rabbitmq_queue_name
       @max_retries             = @configuration.max_retries
-      @attempts                = 0
       @connection              = Bunny.new(host: @configuration.rabbitmq_host,
                                            port: @configuration.rabbitmq_port,
                                            user: @configuration.rabbitmq_user,
@@ -90,14 +89,8 @@ module Happn
     def handle_exception(exception, delivery_info)
       @logger.error(exception)
       @channel.reject(delivery_info.delivery_tag, true)
-      @attempts += 1
-      if @attempts > @max_retries
-        @logger.fatal("Max retry reached to handle event, exit.")
-        @logger.fatal("Max retry reached to handle event, exit. #{exception.backtrace}")
-        exit(1)
-      end
-      @logger.fatal("Can't handle event, wait and retry.")
-      sleep(2)
+      @logger.fatal("Can't handle event, exit.")
+      exit(1)
     end
 
     private
