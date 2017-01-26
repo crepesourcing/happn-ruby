@@ -32,6 +32,11 @@ module Happn
     @event_consumer.start
   end
 
+  def self.create_queue_only
+    Happn.init
+    exit
+  end
+
   configure do |config|
     config.logger                     = nil
     config.rabbitmq_host              = "localhost"
