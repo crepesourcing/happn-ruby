@@ -8,7 +8,6 @@ module Happn
       @logger                  = logger
       @subscription_repository = subscription_repository
       @queue_name              = @configuration.rabbitmq_queue_name
-      @max_retries             = @configuration.max_retries
       @connection              = Bunny.new(host: @configuration.rabbitmq_host,
                                            port: @configuration.rabbitmq_port,
                                            user: @configuration.rabbitmq_user,
@@ -39,7 +38,7 @@ module Happn
 
     private
 
-    def connect
+    def consume
       @connection.start
       @channel = @connection.create_channel
       @channel.basic_qos(@configuration.rabbitmq_prefetch_size)
