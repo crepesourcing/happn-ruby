@@ -38,7 +38,7 @@ module Happn
 
     private
 
-    def consume
+    def connect
       @connection.start
       @channel = @connection.create_channel
       @channel.basic_qos(@configuration.rabbitmq_prefetch_size)
