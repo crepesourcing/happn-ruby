@@ -44,6 +44,7 @@ module Happn
     config.rabbitmq_management_port   = "15672"
     config.rabbitmq_user              = ""
     config.rabbitmq_password          = ""
+    config.rabbitmq_queue_name        = "happn-queue"
     config.rabbitmq_exchange_name     = "events"
     config.rabbitmq_exchange_durable  = true
     config.rabbitmq_queue_mode        = nil
