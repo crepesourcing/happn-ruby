@@ -93,7 +93,7 @@ module Happn
       @logger.error(exception)
       @channel.reject(delivery_info.delivery_tag, true)
       @logger.fatal("Can't handle event, exit.")
-      exit(1)
+      raise exception
     end
 
     private
