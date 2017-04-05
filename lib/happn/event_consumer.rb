@@ -13,9 +13,9 @@ module Happn
                                            user: @configuration.rabbitmq_user,
                                            password: @configuration.rabbitmq_password,
                                            automatically_recover: true)
-      @management_client      = RabbitMQ::HTTP::Client.new("http://#{@configuration.rabbitmq_host}:#{@configuration.rabbitmq_management_port}/",
-                                                           username: @configuration.rabbitmq_user,
-                                                           password: @configuration.rabbitmq_password)
+      @management_client       = RabbitMQ::HTTP::Client.new("http://#{@configuration.rabbitmq_host}:#{@configuration.rabbitmq_management_port}/",
+                                                            username: @configuration.rabbitmq_user,
+                                                            password: @configuration.rabbitmq_password)
     end
 
     def wait_until_connected
@@ -40,14 +40,22 @@ module Happn
 
     def connect
       @connection.start
-      @channel = @connection.create_channel
+      channel_number                   = nil
+      consumer_pool_size               = 1
+      consumer_pool_abort_on_exception = true
+      @channel                         = @connection.create_channel(channel_number, consumer_pool_size, consumer_pool_abort_on_exception)
+      @channel.on_uncaught_exception do |exception|
+        @configuration.on_error&.call(exception)
+        @logger.error("An error occurred. Exiting events consumption.")
+        exit(1)
+      end
       @channel.basic_qos(@configuration.rabbitmq_prefetch_size)
-      arguments = {}
-      arguments["x-queue-mode"] = @configuration.rabbitmq_queue_mode unless @configuration.rabbitmq_queue_mode.nil?
-      @queue   = @channel.queue(@queue_name, durable: true, arguments: arguments)
-      exchange = @channel.send(:topic,
-                               @configuration.rabbitmq_exchange_name,
-                               durable: @configuration.rabbitmq_exchange_durable)
+      arguments                        = {}
+      arguments["x-queue-mode"]        = @configuration.rabbitmq_queue_mode unless @configuration.rabbitmq_queue_mode.nil?
+      @queue                           = @channel.queue(@queue_name, durable: true, arguments: arguments)
+      exchange                         = @channel.send(:topic,
+                                                       @configuration.rabbitmq_exchange_name,
+                                                       durable: @configuration.rabbitmq_exchange_durable)
 
       routing_keys = @subscription_repository.find_all.map do | subscription |
         subscription.query.to_routing_key

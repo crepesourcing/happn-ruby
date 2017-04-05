@@ -50,6 +50,7 @@ module Happn
     config.rabbitmq_queue_mode        = nil
     config.rabbitmq_prefetch_size     = 10
     config.projector_classes          = []
+    config.on_error                   = nil
   end
 
   private
