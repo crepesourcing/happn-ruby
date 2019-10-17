@@ -102,6 +102,8 @@ Happn.configure do |config|
 end
 ```
 
+When Zeitwerk is defined and when `Rails.application.eager_load!` returns `false`, you should call `Zeitwerk::Loader.eager_load_all`. 
+
 ## Overall configuration options
 
 All options have a default value. However, all of them can be changed in your `Happn.configure` block.
