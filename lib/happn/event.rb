@@ -14,6 +14,10 @@ module Happn
       @data[:user_metadata]
     end
 
+    def request_metadata
+      @data[:request_metadata]
+    end
+
     def changes
       @data[:changes]
     end
