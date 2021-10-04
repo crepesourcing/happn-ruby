@@ -125,7 +125,9 @@ All options have a default value. However, all of them can be changed in your `H
 | `on_error` | `nil` | `block` with an argument `exception` | false | When the consumption of an event raises an Error, the consumption exits. However, this block can be called before exiting the consumption execution. | `lambda { |exception| Raven.capture_exception(exception) }` (see Sentry's [documentation](https://github.com/getsentry/raven-ruby) | 
 
 ## Changelog
+### Version 0.1.3
 
+* Use of `rabbitmq_http_api_client >= 2.0.0` and `bunny >= 2.19.0`
 ### Version 0.1.2
 
 * Use of `rabbitmq_http_api_client:1.14.0`, which supports `faraday >= 1`
