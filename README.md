@@ -126,6 +126,10 @@ All options have a default value. However, all of them can be changed in your `H
 
 ## Changelog
 
+### Version 0.1.2
+
+* Use of `rabbitmq_http_api_client:1.14.0`, which supports `faraday >= 1`
+
 ### Version 0.1.1
 
 * Happn now raise an exception instead of exiting the process when the consumption of an event fails, allowing the gem user to decide how to handle it.
