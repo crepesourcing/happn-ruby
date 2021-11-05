@@ -111,7 +111,7 @@ All options have a default value. However, all of them can be changed in your `H
 
 | Option | Default Value | Type | Required? | Description  | Example |
 | ---- | ----- | ------ | ----- | ------ | ----- |
-| `logger` | `Logger.new(STDOUT)`| Logger | Optional | The logger used by `happn` | `Rails.logger` | 
+| `logger` | `Logger.new(STDOUT)`| Logger | Optional | The logger used by `happn` | `Rails.logger` | 
 | `rabbitmq_host` | `"localhost"` | String | Required | RabbitMQ exchange's host. | `"192.168.42.42"` |
 | `rabbitmq_port` | `"5672"` | String | Required | RabbitMQ exchange's port. | `"1234"` |
 | `rabbitmq_user` | `""` | String | Required | RabbitMQ exchange's username. | `"root"` |
