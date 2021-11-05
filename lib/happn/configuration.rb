@@ -5,6 +5,7 @@ module Happn
     config_accessor :rabbitmq_host
     config_accessor :rabbitmq_port
     config_accessor :rabbitmq_management_port
+    config_accessor :rabbitmq_management_scheme
     config_accessor :rabbitmq_user
     config_accessor :rabbitmq_password
     config_accessor :rabbitmq_queue_name
@@ -13,6 +14,7 @@ module Happn
     config_accessor :rabbitmq_queue_mode
     config_accessor :rabbitmq_prefetch_size
     config_accessor :projector_classes
+    config_accessor :bunny_options
     config_accessor :on_error
   end
 end

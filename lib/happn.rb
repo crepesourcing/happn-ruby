@@ -41,6 +41,7 @@ module Happn
     config.logger                     = nil
     config.rabbitmq_host              = "localhost"
     config.rabbitmq_port              = "5672"
+    config.rabbitmq_management_scheme = "http"
     config.rabbitmq_management_port   = "15672"
     config.rabbitmq_user              = ""
     config.rabbitmq_password          = ""
@@ -50,6 +51,8 @@ module Happn
     config.rabbitmq_queue_mode        = nil
     config.rabbitmq_prefetch_size     = 10
     config.projector_classes          = []
+    config.on_error                   = nil
+    config.bunny_options              = {}
     config.on_error                   = nil
   end
 

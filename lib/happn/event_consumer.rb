@@ -8,12 +8,15 @@ module Happn
       @logger                  = logger
       @subscription_repository = subscription_repository
       @queue_name              = @configuration.rabbitmq_queue_name
-      @connection              = Bunny.new(host: @configuration.rabbitmq_host,
-                                           port: @configuration.rabbitmq_port,
-                                           user: @configuration.rabbitmq_user,
-                                           password: @configuration.rabbitmq_password,
-                                           automatically_recover: true)
-      @management_client       = RabbitMQ::HTTP::Client.new("http://#{@configuration.rabbitmq_host}:#{@configuration.rabbitmq_management_port}/",
+      options                  = {
+        host: @configuration.rabbitmq_host,
+        port: @configuration.rabbitmq_port,
+        user: @configuration.rabbitmq_user,
+        password: @configuration.rabbitmq_password,
+        automatically_recover: true
+      }.merge(configuration.bunny_options || {})
+      @connection              = Bunny.new(options)
+      @management_client       = RabbitMQ::HTTP::Client.new("#{@configuration.rabbitmq_management_scheme || "http"}://#{@configuration.rabbitmq_host}:#{@configuration.rabbitmq_management_port}/",
                                                             username: @configuration.rabbitmq_user,
                                                             password: @configuration.rabbitmq_password)
     end
