@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [1.0.2] - 2021-11-06
 
 * Breaking change : force every `port` to be an integer
+* Add `management_options`
 
 ### [1.0.0] - 2021-11-05
 

@@ -53,6 +53,7 @@ module Happn
     config.projector_classes          = []
     config.on_error                   = nil
     config.bunny_options              = {}
+    config.management_options         = {}
     config.on_error                   = nil
   end
 

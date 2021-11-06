@@ -15,6 +15,7 @@ module Happn
     config_accessor :rabbitmq_prefetch_size
     config_accessor :projector_classes
     config_accessor :bunny_options
+    config_accessor :management_options
     config_accessor :on_error
   end
 end

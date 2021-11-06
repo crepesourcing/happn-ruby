@@ -14,11 +14,14 @@ module Happn
         user: @configuration.rabbitmq_user,
         password: @configuration.rabbitmq_password,
         automatically_recover: true
-      }.merge(configuration.bunny_options || {})
+      }.merge(@configuration.bunny_options || {})
       @connection              = Bunny.new(options)
-      @management_client       = RabbitMQ::HTTP::Client.new("#{@configuration.rabbitmq_management_scheme || "http"}://#{@configuration.rabbitmq_host}:#{@configuration.rabbitmq_management_port}/",
-                                                            username: @configuration.rabbitmq_user,
-                                                            password: @configuration.rabbitmq_password)
+
+      management_options = {
+        username: @configuration.rabbitmq_user,
+        password: @configuration.rabbitmq_password
+      }.merge(@configuration.management_options || {})
+      @management_client       = RabbitMQ::HTTP::Client.new("#{@configuration.rabbitmq_management_scheme || "http"}://#{@configuration.rabbitmq_host}:#{@configuration.rabbitmq_management_port}/", management_options)
     end
 
     def wait_until_connected
