@@ -113,12 +113,12 @@ All options have a default value. However, all of them can be changed in your `H
 | ---- | ----- | ------ | ----- | ------ | ----- |
 | `logger` | `Logger.new(STDOUT)`| Logger | Optional | The logger used by `happn` | `Rails.logger` | 
 | `rabbitmq_host` | `"localhost"` | String | Required | RabbitMQ exchange's host. | `"192.168.42.42"` |
-| `rabbitmq_port` | `"5672"` | String | Required | RabbitMQ exchange's port. | `"1234"` |
+| `rabbitmq_port` | `5672` | Integer | Required | RabbitMQ exchange's port. | `1234` |
 | `rabbitmq_user` | `""` | String | Required | RabbitMQ exchange's username. | `"root"` |
 | `rabbitmq_password` | `""` | String | Required | RabbitMQ exchange's password. | `"pouet"` |
 | `rabbitmq_exchange_name` | `"events"` | String | Required | RabbitMQ exchange's name. | `"myproject"` |
 | `rabbitmq_management_scheme` | `"http"` | String | Required | RabbitMQ exchange's management scheme. This scheme is used when `happn` must access metadata information about queues, messages, etc. This port is used to create/delete bindings between the queue and its exchange. | `"https"` |
-| `rabbitmq_management_port` | `"15672"` | String | Required | RabbitMQ exchange's management port. This port is used when `happn` must access metadata information about queues, messages, etc. This port is used to create/delete bindings between the queue and its exchange. | `"4242"` |
+| `rabbitmq_management_port` | `15672` | Integer | Required | RabbitMQ exchange's management port. This port is used when `happn` must access metadata information about queues, messages, etc. This port is used to create/delete bindings between the queue and its exchange. | `15671` |
 | `rabbitmq_queue_name` | `"happn-queue"` | String | Required | The RabbitMQ queue to create, bind and consume. If the queue does not exist, it will be created at startup. | `"my-queue"` |
 | `rabbitmq_exchange_durable` | `true` | Boolean | Optional | Make the RabbitMQ's exchange durable or not. From RabbitMQ's [documentation](https://www.rabbitmq.com/tutorials/amqp-concepts.html#exchanges): _"Durable exchanges survive broker restart whereas transient exchanges do not (they have to be redeclared when broker comes back online)."_ | `false` |
 | `rabbitmq_queue_mode` | `nil` | String | Optional | When creating the queue, this option can be passed to set `x-queue-mode`. For instance, a queue can be made _"lazy"_ by passing `"lazy"` as a value. See [RabbitMQ's documentation](https://www.rabbitmq.com/lazy-queues.html) for more details.  | `lazy` |

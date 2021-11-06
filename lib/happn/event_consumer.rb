@@ -10,7 +10,7 @@ module Happn
       @queue_name              = @configuration.rabbitmq_queue_name
       options                  = {
         host: @configuration.rabbitmq_host,
-        port: @configuration.rabbitmq_port,
+        port: @configuration.rabbitmq_port&.to_i,
         user: @configuration.rabbitmq_user,
         password: @configuration.rabbitmq_password,
         automatically_recover: true
