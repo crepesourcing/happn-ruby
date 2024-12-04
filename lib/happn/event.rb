@@ -36,7 +36,7 @@ module Happn
     end
 
     def timestamp
-      @meta[:timestamp].to_time
+      @meta[:timestamp].to_datetime
     end
 
     def id
