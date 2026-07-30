@@ -1,21 +1,20 @@
 module Happn
   class Configuration
-    include ActiveSupport::Configurable
-    config_accessor :logger
-    config_accessor :rabbitmq_host
-    config_accessor :rabbitmq_port
-    config_accessor :rabbitmq_management_port
-    config_accessor :rabbitmq_management_scheme
-    config_accessor :rabbitmq_user
-    config_accessor :rabbitmq_password
-    config_accessor :rabbitmq_queue_name
-    config_accessor :rabbitmq_exchange_name
-    config_accessor :rabbitmq_exchange_durable
-    config_accessor :rabbitmq_queue_mode
-    config_accessor :rabbitmq_prefetch_size
-    config_accessor :projector_classes
-    config_accessor :bunny_options
-    config_accessor :management_options
-    config_accessor :on_error
+    attr_accessor :logger,
+                  :rabbitmq_host,
+                  :rabbitmq_port,
+                  :rabbitmq_management_port,
+                  :rabbitmq_management_scheme,
+                  :rabbitmq_user,
+                  :rabbitmq_password,
+                  :rabbitmq_queue_name,
+                  :rabbitmq_exchange_name,
+                  :rabbitmq_exchange_durable,
+                  :rabbitmq_queue_mode,
+                  :rabbitmq_prefetch_size,
+                  :projector_classes,
+                  :bunny_options,
+                  :management_options,
+                  :on_error
   end
 end

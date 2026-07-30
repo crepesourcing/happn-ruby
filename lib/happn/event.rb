@@ -1,3 +1,5 @@
+require "date"
+
 module Happn
   class Event
 
@@ -36,7 +38,7 @@ module Happn
     end
 
     def timestamp
-      @meta[:timestamp].to_datetime
+      DateTime.parse(@meta[:timestamp])
     end
 
     def id
@@ -60,11 +62,11 @@ module Happn
     end
 
     def change_after(attribute_name)
-      changes[attribute_name.to_sym].try(:last)
+      changes[attribute_name.to_sym]&.last
     end
 
     def change_before(attribute_name)
-      changes[attribute_name.to_sym].try(:first)
+      changes[attribute_name.to_sym]&.first
     end
 
     def has_change?(attribute_name)

@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [1.1.0] - 2026-07-30
+
+* Remove the `activesupport` dependency: `Happn::Configuration` no longer relies on `ActiveSupport::Configurable`, and `Happn::Event` no longer relies on `String#to_datetime` / `Object#try`
+* Relax the `bundler` development dependency from a pinned `1.12.5` to `>=1.17`
+
 ### [1.0.3] - 2024-12-04
 
 * Replace the use of `to_time` to `to_datetime`
