@@ -37,7 +37,7 @@ jobs:
       - name: Check that the tag matches Flu::VERSION
         run: |
           tag="${GITHUB_REF_NAME#v}"
-          version="$(ruby -Ilib -r happn-ruby/version -e 'print Flu::VERSION')"
+          version="$(ruby -Ilib -r happn/version -e 'print Flu::VERSION')"
           if [ "$tag" != "$version" ]; then
             echo "::error::Tag '${GITHUB_REF_NAME}' does not match Flu::VERSION '${version}'"
             exit 1
