@@ -38,7 +38,12 @@ module Happn
     end
 
     def timestamp
-      DateTime.parse(@meta[:timestamp])
+      raw_timestamp = @meta[:timestamp]
+      if raw_timestamp.nil? || raw_timestamp.to_s.strip.empty?
+        nil
+      else
+        DateTime.parse(raw_timestamp)
+      end
     end
 
     def id

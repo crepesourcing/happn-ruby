@@ -6,7 +6,7 @@ name: Release
 # No RubyGems API key is stored in this repository: the gem is pushed through
 # RubyGems' Trusted Publishing, which exchanges a short-lived GitHub OIDC token
 # for a scoped RubyGems credential. This requires a trusted publisher declared on
-# https://rubygems.org/gems/happn-ruby pointing to this repository, this workflow
+# https://rubygems.org/gems/happn pointing to this repository, this workflow
 # file name and the 'release' environment.
 on:
   push:

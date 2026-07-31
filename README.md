@@ -7,7 +7,7 @@ This gem connects a single RabbitMQ queue and bind it automatically to its excha
 
 ## Requirements
 
-* Ruby >= 3.0
+* Ruby >= 3.2
 * Tested with RabbitMQ 3.5.8
 * `happn-ruby` works with or without Rails (tested with Rails 4 and 5).
 

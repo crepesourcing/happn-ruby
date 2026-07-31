@@ -104,6 +104,18 @@ RSpec.describe Happn::Event do
     it "raises when the timestamp cannot be parsed" do
       expect { build_event(meta: { "timestamp" => "not a date" }).timestamp }.to raise_error(Date::Error)
     end
+
+    it "returns nil when the timestamp is empty" do
+      expect(build_event(meta: { "timestamp" => "" }).timestamp).to be_nil
+    end
+
+    it "returns nil when the timestamp only holds whitespace" do
+      expect(build_event(meta: { "timestamp" => "   " }).timestamp).to be_nil
+    end
+
+    it "returns nil when the payload carries no timestamp" do
+      expect(build_event(meta: { "timestamp" => nil }).timestamp).to be_nil
+    end
   end
 
   describe "the 'data' accessors" do

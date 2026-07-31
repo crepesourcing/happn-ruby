@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/crepesourcing/happn-ruby"
   spec.license       = "MIT"
 
-  spec.required_ruby_version = ">= 3.0"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.metadata = {
     "source_code_uri"       => spec.homepage,

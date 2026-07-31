@@ -1,4 +1,5 @@
 require "bunny"
+require "json"
 require "rabbitmq/http/client"
 
 module Happn
