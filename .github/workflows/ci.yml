@@ -30,6 +30,38 @@ jobs:
 
       - run: bundle exec rspec
 
+  integration:
+    name: Integration tests (RabbitMQ)
+    runs-on: ubuntu-latest
+
+    services:
+      rabbitmq:
+        image: rabbitmq:4-management
+        env:
+          RABBITMQ_DEFAULT_USER: happn
+          RABBITMQ_DEFAULT_PASS: happn
+        ports:
+          - 5672:5672
+          - 15672:15672
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      - run: bundle exec rake integration
+        env:
+          RABBITMQ_USER: happn
+          RABBITMQ_PASSWORD: happn
+
   build:
     name: Build gem
     runs-on: ubuntu-latest

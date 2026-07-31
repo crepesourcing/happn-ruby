@@ -114,6 +114,18 @@ The test suite is written with [RSpec](https://rspec.info) and needs no running 
   bundle exec rake     # or: bundle exec rspec
   ```
 
+## Running the integration tests
+
+The test suite above needs no running RabbitMQ. A second suite, under `spec_integration/`, exercises `Happn`
+against a real broker instead: queue and binding lifecycle, message routing, consumption and acknowledgement,
+and the reject-and-exit contract when a projector handler raises.
+
+  ```bash
+  docker compose up -d --wait   # starts RabbitMQ with the management plugin
+  bundle exec rake integration  # or: bundle exec rspec spec_integration
+  docker compose down
+  ```
+
 ## Overall configuration options
 
 All options have a default value. However, all of them can be changed in your `Happn.configure` block.
