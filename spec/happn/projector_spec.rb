@@ -44,6 +44,14 @@ RSpec.describe Happn::Projector do
       expect(query.to_routing_key).to eq("*.*.*.create country")
     end
 
+    it "treats an attribute explicitly set to nil as :all" do
+      projector.on(emitter: nil, name: "create country") { |event| event }
+
+      query = repository.find_all.first.query
+      expect(query.emitter).to eq(:all)
+      expect(query.to_routing_key).to eq("*.*.*.create country")
+    end
+
     it "subscribes the projector itself" do
       projector.on { |event| event }
 

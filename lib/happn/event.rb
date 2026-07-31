@@ -70,11 +70,11 @@ module Happn
     end
 
     def has_change?(attribute_name)
-      !changes[attribute_name].nil?
+      !changes[attribute_name.to_sym].nil?
     end
 
     def delete_change(attribute_name)
-      changes.delete(attribute_name)
+      changes.delete(attribute_name.to_sym)
     end
 
     private

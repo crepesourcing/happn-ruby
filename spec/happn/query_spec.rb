@@ -32,6 +32,22 @@ RSpec.describe Happn::Query do
     it "accepts nil attributes" do
       expect { described_class.new(nil, nil, nil, nil) }.not_to raise_error
     end
+
+    it "reads a nil attribute back as :all" do
+      query = described_class.new(nil, nil, nil, nil)
+
+      expect([query.emitter, query.kind, query.name, query.status]).to eq([:all, :all, :all, :all])
+    end
+
+    it "only normalizes the nil attributes" do
+      query = described_class.new(nil, "entity_change", nil, "new")
+
+      expect([query.emitter, query.kind, query.name, query.status]).to eq([:all, "entity_change", :all, "new"])
+    end
+
+    it "keeps false as a value of its own" do
+      expect(described_class.new(false, :all, :all, :all).emitter).to be(false)
+    end
   end
 
   describe "#to_routing_key" do
@@ -59,12 +75,16 @@ RSpec.describe Happn::Query do
       expect(query.to_routing_key).to eq("new.my_application.entity_change.create_country")
     end
 
-    # `nil` is not turned into a wildcard: only `:all` is. A query built with
-    # nil attributes therefore binds to an empty routing key.
-    it "renders nil attributes as empty words" do
+    it "turns nil into a wildcard, just like :all" do
       query = described_class.new(nil, nil, nil, nil)
 
-      expect(query.to_routing_key).to eq("...")
+      expect(query.to_routing_key).to eq("*.*.*.*")
+    end
+
+    it "mixes nil and exact attributes" do
+      query = described_class.new(nil, "entity_change", nil, "new")
+
+      expect(query.to_routing_key).to eq("new.*.entity_change.*")
     end
   end
 end

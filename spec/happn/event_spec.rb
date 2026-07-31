@@ -227,11 +227,12 @@ RSpec.describe Happn::Event do
       expect(event.has_change?(:code)).to be(false)
     end
 
-    # Unlike `change_after` and `change_before`, this method does not call
-    # `to_sym` on its argument, so a String never matches. Documented here so a
-    # future fix breaks this example on purpose.
-    it "is false for a changed attribute given as a String" do
-      expect(event.has_change?("name")).to be(false)
+    it "is true for a changed attribute given as a String" do
+      expect(event.has_change?("name")).to be(true)
+    end
+
+    it "is false for an untouched attribute given as a String" do
+      expect(event.has_change?("code")).to be(false)
     end
   end
 
@@ -247,11 +248,9 @@ RSpec.describe Happn::Event do
       expect(event.delete_change(:code)).to be_nil
     end
 
-    # Same String/Symbol asymmetry as `has_change?`.
-    it "does not remove anything when the name is given as a String" do
-      event.delete_change("name")
-
-      expect(event.changes).to eq(name: ["France", "Belgium"])
+    it "removes the change when the name is given as a String" do
+      expect(event.delete_change("name")).to eq(["France", "Belgium"])
+      expect(event.changes).to be_empty
     end
   end
 end

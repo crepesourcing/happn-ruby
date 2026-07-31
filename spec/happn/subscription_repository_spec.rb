@@ -74,6 +74,12 @@ RSpec.describe Happn::SubscriptionRepository do
       expect(repository.find_subscriptions_for(event).size).to eq(1)
     end
 
+    it "matches a subscription registered with nil attributes" do
+      register(emitter: nil, kind: nil, name: nil, status: nil)
+
+      expect(repository.find_subscriptions_for(event).size).to eq(1)
+    end
+
     it "matches a subscription mixing wildcards and exact attributes" do
       register(name: "create country", status: :new)
 

@@ -8,10 +8,10 @@ module Happn
         raise "'Dot' is not a valid character"
       end
 
-      @emitter = emitter
-      @kind    = kind
-      @name    = name
-      @status  = status
+      @emitter = normalize(emitter)
+      @kind    = normalize(kind)
+      @name    = normalize(name)
+      @status  = normalize(status)
     end
 
     def to_routing_key
@@ -19,6 +19,10 @@ module Happn
     end
 
     private
+
+    def normalize(query_expression)
+      query_expression.nil? ? :all : query_expression
+    end
 
     def to_expression(query_expression)
       query_expression == :all ? "*" : query_expression
