@@ -16,7 +16,7 @@ This gem connects a single RabbitMQ queue and bind it automatically to its excha
 Add the gem to your project's Gemfile:
 
   ```ruby
-  gem "happn", git: "https://github.com/crepesourcing/happn-ruby.git"
+  gem "happn"
   ```
 
 Then, configure `Happn`. If you use Rails, you can create an initializer into your Rails app (`config/initializers/happn.rb`). This code can be called anywhere before starting `Happn.init`.
