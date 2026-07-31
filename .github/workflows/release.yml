@@ -6,7 +6,7 @@ name: Release
 # No RubyGems API key is stored in this repository: the gem is pushed through
 # RubyGems' Trusted Publishing, which exchanges a short-lived GitHub OIDC token
 # for a scoped RubyGems credential. This requires a trusted publisher declared on
-# https://rubygems.org/gems/happn pointing to this repository, this workflow
+# https://rubygems.org/gems/flu-rails pointing to this repository, this workflow
 # file name and the 'release' environment.
 on:
   push:
@@ -34,12 +34,12 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
 
-      - name: Check that the tag matches Happn::VERSION
+      - name: Check that the tag matches Flu::VERSION
         run: |
           tag="${GITHUB_REF_NAME#v}"
-          version="$(ruby -Ilib -r happn/version -e 'print Happn::VERSION')"
+          version="$(ruby -Ilib -r flu-rails/version -e 'print Flu::VERSION')"
           if [ "$tag" != "$version" ]; then
-            echo "::error::Tag '${GITHUB_REF_NAME}' does not match Happn::VERSION '${version}'"
+            echo "::error::Tag '${GITHUB_REF_NAME}' does not match Flu::VERSION '${version}'"
             exit 1
           fi
 
