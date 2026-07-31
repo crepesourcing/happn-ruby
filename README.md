@@ -136,3 +136,22 @@ All options have a default value. However, all of them can be changed in your `H
 | `bunny_options` | `{}` | Hash of symbols | Optional | Additional options to add when connecting the RabbitMQ broker. This overrides the existing options with the same name. | `{ verify_peer: true }` |
 | `management_options` | `{}` | Hash of symbols | Optional | Additional options to add when accessing the RabbitMQ Managmement. This overrides the existing options with the same name. The options are defined at https://github.com/ruby-amqp/rabbitmq_http_api_client | `{ verify: false }` |
 | `on_error` | `nil` | `block` with an argument `exception` | false | When the consumption of an event raises an Error, the consumption exits. However, this block can be called before exiting the consumption execution. | `lambda { |exception| Raven.capture_exception(exception) }` (see Sentry's [documentation](https://github.com/getsentry/raven-ruby) | 
+
+## How to release a new version
+
+Releases are published to [RubyGems](https://rubygems.org/gems/happn) by GitHub Actions
+(`.github/workflows/release.yml`), through [Trusted Publishing](https://guides.rubygems.org/trusted-publishing/):
+no API key is stored in this repository, the workflow exchanges a short-lived GitHub OIDC token for a
+scoped RubyGems credential.
+
+1. Update `Happn::VERSION` in `lib/happn/version.rb` and the `CHANGELOG.md`
+2. Commit and push these changes to `master`
+3. Tag the commit and push the tag:
+
+```
+  $ git tag -a v1.1.1 -m "Version 1.1.1"
+  $ git push origin v1.1.1
+```
+
+The workflow then checks that the tag matches `Happn::VERSION`, runs the tests, builds the gem
+and pushes it. It only publishes tags starting with `v`.

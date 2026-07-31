@@ -1,0 +1,50 @@
+name: Release
+
+# Publishing is triggered by pushing a version tag, e.g.:
+#   git tag -a v1.3.0 -m "Version 1.3.0" && git push origin v1.3.0
+#
+# No RubyGems API key is stored in this repository: the gem is pushed through
+# RubyGems' Trusted Publishing, which exchanges a short-lived GitHub OIDC token
+# for a scoped RubyGems credential. This requires a trusted publisher declared on
+# https://rubygems.org/gems/happn pointing to this repository, this workflow
+# file name and the 'release' environment.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Push gem to RubyGems.org
+    runs-on: ubuntu-latest
+
+    environment: release
+
+    permissions:
+      contents: write # 'rake release' pushes the version tag when it does not exist yet
+      id-token: write # mandatory to request the OIDC token used by trusted publishing
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      - name: Check that the tag matches Happn::VERSION
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(ruby -Ilib -r happn/version -e 'print Happn::VERSION')"
+          if [ "$tag" != "$version" ]; then
+            echo "::error::Tag '${GITHUB_REF_NAME}' does not match Happn::VERSION '${version}'"
+            exit 1
+          fi
+
+      - name: Run tests
+        run: bundle exec rspec
+
+      # Builds the gem, pushes it to RubyGems.org and waits for it to be available.
+      - uses: rubygems/release-gem@v1
