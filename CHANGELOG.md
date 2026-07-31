@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [Unreleased]
 
 * Suite of tests
+* Gem metadata: source code, changelog, `required_ruby_version >= 3.0`, a real description, and a package restricted to the library itself
 * `Happn::Event#has_change?` and `Happn::Event#delete_change` now accept an attribute name given as a `String`, like `change_before` and `change_after` already did. They used to silently match nothing in that case.
 * A query attribute explicitly set to `nil` now means _"all"_, as documented, instead of producing an empty word in the routing key. `Happn::Query` normalizes it into `:all` at build time, so the binding declared on the exchange and the local dispatch of the event agree with each other.
 

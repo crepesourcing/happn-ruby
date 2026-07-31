@@ -9,13 +9,26 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Commuty"]
   spec.email         = ["support@commuty.net"]
   spec.summary       = "Gem to connect a RabbitMQ exchange and listen for events."
-  spec.description   = "Gem to connect a RabbitMQ exchange and listen for events."
-  spec.homepage      = "https://gitlab.spin42.me/commuty/happn"
+  spec.description   = "Happn connects a RabbitMQ topic exchange and consumes CREPE events sequentially. " \
+                       "It lets developers declare \"projectors\" that match events on their emitter, kind, " \
+                       "name and status, and binds its queue to the exchange according to those matchers."
+  spec.homepage      = "https://github.com/crepesourcing/happn-ruby"
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files -z`.split("\x0")
+  spec.required_ruby_version = ">= 3.0"
+
+  spec.metadata = {
+    "source_code_uri"       => spec.homepage,
+    "changelog_uri"         => "#{spec.homepage}/blob/master/CHANGELOG.md",
+    "bug_tracker_uri"       => "#{spec.homepage}/issues",
+    "rubygems_mfa_required" => "true"
+  }
+
+  spec.files         = `git ls-files -z`.split("\x0").reject do |file|
+    file.start_with?("spec/", ".github/", ".claude/") ||
+      [".gitignore", ".rspec", "Gemfile", "Rakefile"].include?(file)
+  end
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler",                    ">=1.17"
