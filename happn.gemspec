@@ -19,6 +19,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler",                    ">=1.17"
+  spec.add_development_dependency "rake",                       ">=12.0"
+  spec.add_development_dependency "rspec",                      "~>3.0"
   spec.add_dependency             "bunny",                      ">=2.19.0"
   spec.add_dependency             "rabbitmq_http_api_client",   ">=2.0.0"
 end
