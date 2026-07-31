@@ -149,8 +149,8 @@ scoped RubyGems credential.
 3. Tag the commit and push the tag:
 
 ```
-  $ git tag -a v1.1.1 -m "Version 1.1.1"
-  $ git push origin v1.1.1
+  $ git tag -a v1.1.2 -m "Version 1.1.2"
+  $ git push origin v1.1.2
 ```
 
 The workflow then checks that the tag matches `Happn::VERSION`, runs the tests, builds the gem
