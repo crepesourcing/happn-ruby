@@ -34,12 +34,12 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
 
-      - name: Check that the tag matches Flu::VERSION
+      - name: Check that the tag matches Happn::VERSION
         run: |
           tag="${GITHUB_REF_NAME#v}"
-          version="$(ruby -Ilib -r happn/version -e 'print Flu::VERSION')"
+          version="$(ruby -Ilib -r happn/version -e 'print Happn::VERSION')"
           if [ "$tag" != "$version" ]; then
-            echo "::error::Tag '${GITHUB_REF_NAME}' does not match Flu::VERSION '${version}'"
+            echo "::error::Tag '${GITHUB_REF_NAME}' does not match Happn::VERSION '${version}'"
             exit 1
           fi
 
