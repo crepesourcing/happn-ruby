@@ -24,11 +24,7 @@ Gem::Specification.new do |spec|
     "rubygems_mfa_required" => "true"
   }
 
-  spec.files         = `git ls-files -z`.split("\x0").reject do |file|
-    file.start_with?("spec/", ".github/", ".claude/") ||
-      [".gitignore", ".rspec", "Gemfile", "Rakefile"].include?(file)
-  end
-  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  spec.files         = Dir.glob(["lib/**/*.rb", "CHANGELOG.md", "MIT-LICENSE", "README.md", "happn.gemspec"]).sort
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler",                    ">=1.17"
