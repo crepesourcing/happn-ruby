@@ -68,9 +68,8 @@ module Happn
       arguments                        = {}
       arguments["x-queue-mode"]        = @configuration.rabbitmq_queue_mode unless @configuration.rabbitmq_queue_mode.nil?
       @queue                           = @channel.queue(@queue_name, durable: true, arguments: arguments)
-      exchange                         = @channel.send(:topic,
-                                                       @configuration.rabbitmq_exchange_name,
-                                                       durable: @configuration.rabbitmq_exchange_durable)
+      exchange                         = @channel.topic(@configuration.rabbitmq_exchange_name,
+                                                        durable: @configuration.rabbitmq_exchange_durable)
 
       routing_keys = @subscription_repository.find_all.map do | subscription |
         subscription.query.to_routing_key
@@ -119,8 +118,6 @@ module Happn
       @logger.fatal("Can't handle event, exit.")
       raise exception
     end
-
-    private
 
     def unbind_useless_routing_keys(queue, exchange, useful_routing_keys)
       all_routing_keys = find_all_routing_keys_of(queue)

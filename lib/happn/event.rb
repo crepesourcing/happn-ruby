@@ -3,13 +3,11 @@ require "date"
 module Happn
   class Event
 
+    attr_reader :data
+
     def initialize(args)
       @meta = deep_underscore_keys(args.fetch("meta"))
       @data = deep_underscore_keys(args.fetch("data"))
-    end
-
-    def data
-      @data
     end
 
     def user_metadata
@@ -82,10 +80,13 @@ module Happn
       changes.delete(attribute_name.to_sym)
     end
 
+    UNDERSCORED_KEYS = {}
+    private_constant :UNDERSCORED_KEYS
+
     private
 
     def underscore_key(key)
-      underscore(key).to_sym
+      UNDERSCORED_KEYS[key] ||= underscore(key).to_sym
     end
 
     def deep_underscore_keys(value)

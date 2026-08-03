@@ -34,7 +34,8 @@ module Happn
         possible_event_emitters.each do | emitter |
           possible_event_kinds.each do | kind |
             possible_event_names.each do | name |
-              subscriptions += @subscriptions.dig(status, emitter, kind, name) || []
+              found = @subscriptions.dig(status, emitter, kind, name)
+              subscriptions.concat(found) if found
             end
           end
         end
@@ -47,7 +48,7 @@ module Happn
     def flatten(item)
       if item.instance_of?(Hash)
         item.values.inject([]) do | result, value |
-          result += flatten(value)
+          result.concat(flatten(value))
         end
       else
         item

@@ -24,7 +24,7 @@ module Happn
   def self.init
     @logger                 = @configuration.logger || Logger.new(STDOUT)
     subscription_repository = SubscriptionRepository.new(@logger)
-    Happn::register(@configuration.projector_classes, subscription_repository)
+    register(@configuration.projector_classes, subscription_repository)
     @event_consumer         = EventConsumer.new(@logger, @configuration, subscription_repository)
   end
 
@@ -60,8 +60,6 @@ module Happn
     config.management_options         = {}
   end
 
-  private
-
   def self.register(projector_classes, subscription_repository)
     @logger.info("#{projector_classes.size} projector are going to be registered...")
     projector_classes.each do | projector_class |
@@ -70,5 +68,6 @@ module Happn
       @logger.info("Projector '#{projector_class}' registered")
     end
   end
+  private_class_method :register
 
 end

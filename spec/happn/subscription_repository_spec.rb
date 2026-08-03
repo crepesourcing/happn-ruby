@@ -57,6 +57,14 @@ RSpec.describe Happn::SubscriptionRepository do
 
       expect(repository.find_all).to all(be_a(Happn::Subscription))
     end
+
+    it "does not hand out the array the subscriptions are indexed in" do
+      register
+
+      repository.find_all.clear
+
+      expect(repository.find_all.size).to eq(1)
+    end
   end
 
   describe "#find_subscriptions_for" do
@@ -148,6 +156,14 @@ RSpec.describe Happn::SubscriptionRepository do
 
       event = stub_event(emitter: "all", kind: "all", name: "all", status: "all")
       expect(repository.find_subscriptions_for(event).size).to eq(2)
+    end
+
+    it "does not hand out the array the subscriptions are indexed in" do
+      register
+
+      repository.find_subscriptions_for(event).clear
+
+      expect(repository.find_subscriptions_for(event).size).to eq(1)
     end
   end
 end

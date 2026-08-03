@@ -176,6 +176,10 @@ RSpec.describe Happn do
       expect { described_class.init }.not_to raise_error
       expect(Happn::SpecProjectors::Recording.instances).to be_empty
     end
+
+    it "does not expose the registration of the projectors" do
+      expect(described_class).not_to respond_to(:register)
+    end
   end
 
   describe ".start" do

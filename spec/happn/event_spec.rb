@@ -60,6 +60,24 @@ RSpec.describe Happn::Event do
     end
   end
 
+  describe "the memoization of the key conversion" do
+    it "reuses the conversion of a key a previous event already carried" do
+      described_class.new("meta" => {}, "data" => { "cachedKey" => 1 })
+      event = described_class.new("meta" => {}, "data" => {})
+
+      allow(event).to receive(:underscore).and_raise("'cachedKey' should not be converted twice")
+
+      expect(event.send(:underscore_key, "cachedKey")).to eq(:cached_key)
+    end
+
+    it "keeps the conversions of two distinct keys apart" do
+      event = described_class.new("meta" => {}, "data" => {})
+
+      expect(event.send(:underscore_key, "firstKey")).to eq(:first_key)
+      expect(event.send(:underscore_key, "secondKey")).to eq(:second_key)
+    end
+  end
+
   describe "the 'meta' accessors" do
     subject(:event) { build_event }
 

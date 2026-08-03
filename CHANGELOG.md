@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `Happn` now reads the existing bindings of its queue on the vhost its broker connection uses, instead of always on the default one. On any other vhost it used to read someone else's bindings, and to unbind legitimate ones from its own queue as a result. Both `vhost` and `virtual_host` are honoured in `bunny_options`, with the precedence Bunny gives them.
 * `Happn` now only unbinds the routing keys bound to its own exchange. It used to consider every binding of the queue, whatever its source, so the implicit binding each queue carries to the default exchange triggered a useless `unbind` on every start up.
 * `Happn.stop` stops the consumption started by `Happn.start` and releases the thread it blocks. It cancels the consumer, lets the messages already handed over run to completion, then closes the broker connection.
+* `Happn` builds an event from its payload about 5 times faster. The conversion of a payload key into an underscored symbol is now memoized instead of being recomputed on every key of every message.
+* `Happn` allocates far fewer arrays while looking up the handlers of an event: the list under construction is filled in place instead of being reallocated on each of the 16 combinations looked up, which also lightens the garbage collector on a busy queue.
+* `Happn.register` is now really private. It was meant to be, and read as such, but the `private` guarding it had no effect on a method defined on the module itself, leaving it callable from the outside.
 * Publishing a version now requires the whole test suite to pass.
 
 ### [1.1.7] - 2026-08-01
