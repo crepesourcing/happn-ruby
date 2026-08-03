@@ -125,5 +125,29 @@ RSpec.describe Happn::SubscriptionRepository do
 
       expect(repository.find_subscriptions_for(event)).to be_empty
     end
+
+    "emitter", "kind", "name", "status"].each do |attribute|
+      it "matches a wildcard subscription once for an event whose #{attribute} is literally 'all'" do
+        register
+
+        expect(repository.find_subscriptions_for(stub_event(**{ attribute.to_sym => "all" })).size).to eq(1)
+      end
+    end
+
+    it "matches a wildcard subscription once for an event made of 'all' attributes" do
+      register
+
+      event = stub_event(emitter: "all", kind: "all", name: "all", status: "all")
+      expect(repository.find_subscriptions_for(event).size).to eq(1)
+    end
+
+    it "still runs every distinct handler of an event made of 'all' attributes" do
+      register
+      register
+      register(name: "delete country")
+
+      event = stub_event(emitter: "all", kind: "all", name: "all", status: "all")
+      expect(repository.find_subscriptions_for(event).size).to eq(2)
+    end
   end
 end

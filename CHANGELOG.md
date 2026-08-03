@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [Unreleased]
+
+* `Happn` no longer runs a handler several times for a single event. `"all"` is both the wildcard a query is stored under and a value an event may legitimately carry, and the dispatch used to list it twice: an event whose `emitter`, `kind` and `status` were all `"all"` ran each of its matching handlers 8 times, and 16 times when its `name` carried it too.
+* Publishing a version now requires the whole test suite to pass. 
+
 ### [1.1.7] - 2026-08-01
 
 * **Breaking**: `required_ruby_version` is raised from `>= 3.0` to `>= 3.2`.

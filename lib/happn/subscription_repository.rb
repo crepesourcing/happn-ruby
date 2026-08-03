@@ -25,10 +25,10 @@ module Happn
     end
 
     def find_subscriptions_for(event)
-      possible_event_statuses = ["all", event.status.to_s]
-      possible_event_emitters = ["all", event.emitter.to_s]
-      possible_event_names    = ["all", event.name.to_s]
-      possible_event_kinds    = ["all", event.kind.to_s]
+      possible_event_statuses = ["all", event.status.to_s].uniq
+      possible_event_emitters = ["all", event.emitter.to_s].uniq
+      possible_event_names    = ["all", event.name.to_s].uniq
+      possible_event_kinds    = ["all", event.kind.to_s].uniq
       subscriptions           = []
       possible_event_statuses.each do | status |
         possible_event_emitters.each do | emitter |
