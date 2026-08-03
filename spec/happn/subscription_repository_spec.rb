@@ -126,7 +126,7 @@ RSpec.describe Happn::SubscriptionRepository do
       expect(repository.find_subscriptions_for(event)).to be_empty
     end
 
-    "emitter", "kind", "name", "status"].each do |attribute|
+    ["emitter", "kind", "name", "status"].each do |attribute|
       it "matches a wildcard subscription once for an event whose #{attribute} is literally 'all'" do
         register
 

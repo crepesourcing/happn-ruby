@@ -17,6 +17,7 @@ module Happn
         automatically_recover: true
       }.merge(@configuration.bunny_options || {})
       @connection              = Bunny.new(options)
+      @vhost                   = options[:virtual_host] || options[:vhost] || "/"
 
       management_options = {
         username: @configuration.rabbitmq_user,
@@ -122,8 +123,9 @@ module Happn
     end
 
     def find_all_routing_keys_of(queue)
-      @management_client.list_queue_bindings("/", queue.name).map do | binding |
-        binding.routing_key
+      exchange_name = @configuration.rabbitmq_exchange_name
+      @management_client.list_queue_bindings(@vhost, queue.name).filter_map do | binding |
+        binding.routing_key if binding.source == exchange_name
       end
     end
   end

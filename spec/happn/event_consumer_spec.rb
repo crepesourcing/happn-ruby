@@ -38,8 +38,8 @@ RSpec.describe Happn::EventConsumer do
     allow(management).to receive(:list_queue_bindings).and_return([])
   end
 
-  def binding_double(routing_key)
-    double("binding", routing_key: routing_key)
+  def binding_double(routing_key, source: "events")
+    double("binding", routing_key: routing_key, source: source)
   end
 
   describe "#initialize" do
@@ -331,6 +331,46 @@ RSpec.describe Happn::EventConsumer do
 
     it "reads the existing bindings of the queue on the default vhost" do
       expect(management).to receive(:list_queue_bindings).with("/", "happn-queue").and_return([])
+
+      consumer.wait_until_connected
+    end
+
+    it "reads the existing bindings on the vhost the broker connection uses" do
+      configuration.bunny_options = { vhost: "/production" }
+
+      expect(management).to receive(:list_queue_bindings).with("/production", "happn-queue").and_return([])
+
+      consumer.wait_until_connected
+    end
+
+    it "resolves the vhost given under Bunny's 'virtual_host' spelling" do
+      configuration.bunny_options = { virtual_host: "/production" }
+
+      expect(management).to receive(:list_queue_bindings).with("/production", "happn-queue").and_return([])
+
+      consumer.wait_until_connected
+    end
+
+    it "lets 'virtual_host' win over 'vhost', the way Bunny resolves them" do
+      configuration.bunny_options = { virtual_host: "/production", vhost: "/staging" }
+
+      expect(management).to receive(:list_queue_bindings).with("/production", "happn-queue").and_return([])
+
+      consumer.wait_until_connected
+    end
+
+    it "leaves alone a binding coming from another exchange" do
+      allow(management).to receive(:list_queue_bindings).and_return([binding_double("*.*.*.obsolete", source: "other-events")])
+
+      expect(queue).not_to receive(:unbind)
+
+      consumer.wait_until_connected
+    end
+
+    it "leaves alone the implicit binding to the default exchange" do
+      allow(management).to receive(:list_queue_bindings).and_return([binding_double("happn-queue", source: "")])
+
+      expect(queue).not_to receive(:unbind)
 
       consumer.wait_until_connected
     end

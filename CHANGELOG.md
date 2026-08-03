@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [Unreleased]
 
 * `Happn` no longer runs a handler several times for a single event. `"all"` is both the wildcard a query is stored under and a value an event may legitimately carry, and the dispatch used to list it twice: an event whose `emitter`, `kind` and `status` were all `"all"` ran each of its matching handlers 8 times, and 16 times when its `name` carried it too.
-* Publishing a version now requires the whole test suite to pass. 
+* `Happn` now reads the existing bindings of its queue on the vhost its broker connection uses, instead of always on the default one. On any other vhost it used to read someone else's bindings, and to unbind legitimate ones from its own queue as a result. Both `vhost` and `virtual_host` are honoured in `bunny_options`, with the precedence Bunny gives them.
+* `Happn` now only unbinds the routing keys bound to its own exchange. It used to consider every binding of the queue, whatever its source, so the implicit binding each queue carries to the default exchange triggered a useless `unbind` on every start up.
+* Publishing a version now requires the whole test suite to pass.
 
 ### [1.1.7] - 2026-08-01
 
