@@ -110,7 +110,7 @@ class LoggerProjector < Happn::Projector
     end
 
     on kind: "request", status: :new do |event|
-      Rails.logger("This is a new request to the controller: #{event.data["controller_name"]}")
+      Rails.logger("This is a new request to the controller: #{event.data[:controller_name]}")
     end
   end
 end
