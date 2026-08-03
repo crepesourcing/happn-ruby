@@ -9,6 +9,7 @@ RSpec.describe Happn::EventConsumer do
   let(:exchange)   { instance_double(Bunny::Exchange) }
   let(:management) { instance_double(RabbitMQ::HTTP::Client) }
   let(:repository) { Happn::SubscriptionRepository.new(silent_logger) }
+  let(:subscriber) { instance_double(Bunny::Consumer, cancel: nil) }
 
   let(:configuration) do
     Happn::Configuration.new.tap do |config|
@@ -33,9 +34,24 @@ RSpec.describe Happn::EventConsumer do
     allow(Bunny).to receive(:new).and_return(connection)
     allow(RabbitMQ::HTTP::Client).to receive(:new).and_return(management)
     allow(connection).to receive(:create_channel).and_return(channel)
+    allow(connection).to receive(:open?).and_return(false)
+    allow(connection).to receive(:close)
     allow(channel).to receive(:queue).and_return(queue)
     allow(channel).to receive(:topic).and_return(exchange)
+    allow(channel).to receive(:generate_consumer_tag).and_return("happn-consumer-tag")
     allow(management).to receive(:list_queue_bindings).and_return([])
+    # The consumer registers its handler through 'on_delivery', so the examples
+    # capture it to play a message the way the broker's work pool would.
+    allow(Bunny::Consumer).to receive(:new).and_return(subscriber)
+    allow(subscriber).to receive(:on_delivery) { |&handler| @on_delivery = handler }
+    allow(queue).to receive(:subscribe_with)
+  end
+
+  # 'subscribe_with' blocks forever against a real broker. Here it stands for the
+  # broker handing one message over, so 'start' returns once it is consumed.
+  def deliver(payload, delivery_info)
+    allow(queue).to receive(:subscribe_with) { @on_delivery.call(delivery_info, double("properties"), payload) }
+    consumer.start
   end
 
   def binding_double(routing_key, source: "events")
@@ -393,10 +409,61 @@ RSpec.describe Happn::EventConsumer do
       consumer.start
     end
 
-    it "subscribes to the queue with manual acknowledgements, blocking the caller" do
-      expect(queue).to receive(:subscribe).with({ manual_ack: true, block: true })
+    it "subscribes to the queue with its own consumer, blocking the caller" do
+      expect(queue).to receive(:subscribe_with).with(subscriber, block: true)
 
       consumer.start
+    end
+
+    it "consumes with manual acknowledgements" do
+      expect(Bunny::Consumer).to receive(:new)
+        .with(channel, queue, "happn-consumer-tag", false)
+        .and_return(subscriber)
+
+      consumer.start
+    end
+  end
+
+  describe "#stop" do
+    it "cancels the consumer so the blocked caller is released" do
+      consumer.start
+
+      expect(subscriber).to receive(:cancel)
+
+      consumer.stop
+    end
+
+    it "closes the broker connection" do
+      allow(connection).to receive(:open?).and_return(true)
+      consumer.start
+
+      expect(connection).to receive(:close)
+
+      consumer.stop
+    end
+
+    it "leaves an already closed connection alone" do
+      allow(connection).to receive(:open?).and_return(false)
+      consumer.start
+
+      expect(connection).not_to receive(:close)
+
+      consumer.stop
+    end
+
+    it "does nothing when consumption never started" do
+      expect(subscriber).not_to receive(:cancel)
+
+      expect { consumer.stop }.not_to raise_error
+    end
+
+    it "can be called twice" do
+      consumer.start
+      consumer.stop
+
+      expect(subscriber).not_to receive(:cancel)
+
+      expect { consumer.stop }.not_to raise_error
     end
   end
 
@@ -407,8 +474,7 @@ RSpec.describe Happn::EventConsumer do
     before { projector.define_handlers }
 
     def consume(payload)
-      allow(queue).to receive(:subscribe).and_yield(delivery_info, double("properties"), payload)
-      consumer.start
+      deliver(payload, delivery_info)
     end
 
     it "builds an Event out of the JSON payload" do
@@ -462,39 +528,38 @@ RSpec.describe Happn::EventConsumer do
     let(:delivery_info) { double("delivery_info", delivery_tag: "delivery-tag-42") }
     let(:projector)     { Happn::SpecProjectors::CatchAll.new(silent_logger, repository) }
 
-    before do
-      projector.on { raise "projector failed" }
-      allow(queue).to receive(:subscribe).and_yield(delivery_info, double("properties"), build_event_payload)
+    before { projector.on { raise "projector failed" } }
+
+    def consume(payload = build_event_payload)
+      deliver(payload, delivery_info)
     end
 
     it "requeues the message" do
       expect(channel).to receive(:reject).with("delivery-tag-42", true)
 
-      expect { consumer.start }.to raise_error("projector failed")
+      expect { consume }.to raise_error("projector failed")
     end
 
     it "re-raises the exception so the caller decides what to do" do
-      expect { consumer.start }.to raise_error(RuntimeError, "projector failed")
+      expect { consume }.to raise_error(RuntimeError, "projector failed")
     end
 
     it "logs the exception" do
       expect(logger).to receive(:error).with(an_instance_of(RuntimeError))
 
-      expect { consumer.start }.to raise_error("projector failed")
+      expect { consume }.to raise_error("projector failed")
     end
 
     it "logs a fatal message" do
       expect(logger).to receive(:fatal).with("Can't handle event, exit.")
 
-      expect { consumer.start }.to raise_error("projector failed")
+      expect { consume }.to raise_error("projector failed")
     end
 
     it "reports a malformed payload the same way" do
-      allow(queue).to receive(:subscribe).and_yield(delivery_info, double("properties"), "not json")
-
       expect(channel).to receive(:reject).with("delivery-tag-42", true)
 
-      expect { consumer.start }.to raise_error(JSON::ParserError)
+      expect { consume("not json") }.to raise_error(JSON::ParserError)
     end
   end
 end

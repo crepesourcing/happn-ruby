@@ -44,6 +44,13 @@ module Happn
       consume
     end
 
+    def stop
+      @logger.info("Stopping events consumption...")
+      @consumer&.cancel
+      @consumer = nil
+      @connection.close if @connection.open?
+    end
+
     private
 
     def connect
@@ -78,18 +85,19 @@ module Happn
       @logger.info("Ready!")
     end
 
+    # 'Queue#subscribe' blocks before it can return the consumer it built, so the
+    # consumer is built here instead: 'stop' needs a handle on it to cancel it.
+    # Bunny's fourth argument is 'no_ack', hence false for a manual acknowledgement.
     def consume
-      options  = {
-        manual_ack: true,
-        block: true
-      }
-      @queue.subscribe(options) do | delivery_info, _properties, event |
+      @consumer = Bunny::Consumer.new(@channel, @queue, @channel.generate_consumer_tag, false)
+      @consumer.on_delivery do | delivery_info, _properties, event |
         begin
           handle_message(event, delivery_info)
         rescue => exception
           handle_exception(exception, delivery_info)
         end
       end
+      @queue.subscribe_with(@consumer, block: true)
     end
 
     def handle_message(message, delivery_info)

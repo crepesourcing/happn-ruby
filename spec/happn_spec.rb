@@ -1,6 +1,6 @@
 RSpec.describe Happn do
 
-  let(:event_consumer) { instance_double(Happn::EventConsumer, start: nil, wait_until_connected: nil) }
+  let(:event_consumer) { instance_double(Happn::EventConsumer, start: nil, stop: nil, wait_until_connected: nil) }
 
   # `Happn` keeps its configuration, its logger and its consumer in module-level
   # instance variables. Every example works on a copy and puts the original
@@ -186,6 +186,24 @@ RSpec.describe Happn do
       expect(event_consumer).to receive(:start)
 
       described_class.start
+    end
+  end
+
+  describe ".stop" do
+    it "stops the event consumer" do
+      described_class.configure { |config| config.logger = silent_logger }
+      described_class.init
+
+      expect(event_consumer).to receive(:stop)
+
+      described_class.stop
+    end
+
+    # Typically called from a signal handler, which may fire before 'init' ran.
+    it "does nothing when Happn was never initialized" do
+      described_class.instance_variable_set(:@event_consumer, nil)
+
+      expect { described_class.stop }.not_to raise_error
     end
   end
 

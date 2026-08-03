@@ -73,6 +73,28 @@ Starting `Happn` consumes events sequentially. For instance, it can be started f
   end
   ```
 
+### Shutting Down
+
+`Happn.start` blocks the calling thread for as long as the consumption lasts. `Happn.stop` releases it: it cancels the consumer, lets the messages already being handled run to completion, and closes the broker connection. It is meant to be called from another thread than the one blocked in `Happn.start`.
+
+`Happn` installs no signal handler of its own, because only the application knows what a graceful shutdown means for it. Wiring one is up to you:
+
+  ```ruby
+  namespace :events do
+    desc "Listen all events and consume them."
+    task consume: :environment do
+      Happn.init
+      Signal.trap("TERM") { Thread.new { Happn.stop } }
+      Signal.trap("INT")  { Thread.new { Happn.stop } }
+      Happn.start
+    end
+  end
+  ```
+
+Signal handlers run in a context where very little is allowed, hence the `Thread.new`.
+
+Without it, an orchestrator stopping the process interrupts the handler in flight. Nothing is lost, the message was never acknowledged, so the broker redelivers it, but it is consumed twice, once partially.
+
 ### Define a Projector
 
 A projector is a class that defines how to consume one or multiple types of events. This class must:

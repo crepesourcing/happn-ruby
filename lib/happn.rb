@@ -32,6 +32,10 @@ module Happn
     @event_consumer.start
   end
 
+  def self.stop
+    @event_consumer&.stop
+  end
+
   def self.create_queue_only
     Happn.init
     @event_consumer.wait_until_connected
